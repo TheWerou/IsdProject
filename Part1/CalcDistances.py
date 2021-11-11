@@ -23,4 +23,4 @@ class CalcDistances:
         poweredDifrence = pow(difrence, p)
         if poweredDifrence == 0:
             return poweredDifrence
-        return pow(poweredDifrence, -r)
+        return pow(poweredDifrence, int(1/r))

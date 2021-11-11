@@ -177,8 +177,6 @@ class MainClass:
         wynik1 = wynik[0, :]
         wynik2 = wynik[1, :]
 
-        wynik3 = wynik[:, 0]
-        wynik4 = wynik[:, 1]
         plt.scatter(wynik1, wynik2, c=kmeans.labels_, cmap='rainbow')
         #plt.plot(wynik1, wynik2, 'bo')
         plt.show()
