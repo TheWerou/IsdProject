@@ -11,6 +11,8 @@ from Model.TfmCell import TfmCell
 from scipy.spatial import distance
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.manifold import MDS
+from sklearn.cluster import KMeans
 
 from CalcDistances import CalcDistances
 from SaveToFile import SaveToFile
@@ -59,7 +61,7 @@ class MainClass:
         return self.saveF.ReadFile(fileNameTxt)
 
     def GenerateTfmCellList(self):
-        for i in self.ListOfData: # tu text
+        for i in self.ListOfData: 
             outputList = []
             textToAnalize = self.GetExtractedText(i.DataName)
             for k in self.terms:
@@ -67,6 +69,7 @@ class MainClass:
                 outputList.append(tfmCell)
                 self.ListOfTfmCells.append(tfmCell)
             self.ListOfTfmCellsData.append(outputList)
+        self.TfmTextTable(self.ListOfTfmCellsData, "TFM.txt")
 
     def GenerateEuclidesDistance(self):
         calcObject = CalcDistances()
@@ -79,6 +82,7 @@ class MainClass:
             iterator += 1
             biggerOutputList.append(outputList) 
         self.TextTable(biggerOutputList, "Euclides.txt")
+        return biggerOutputList
 
     def GenerateCosineDistance(self):
         calcObject = CalcDistances()
@@ -91,6 +95,7 @@ class MainClass:
             iterator += 1
             biggerOutputList.append(outputList) 
         self.TextTable(biggerOutputList, "Cosine.txt")
+        return biggerOutputList
 
     def GenerateChebysheveDistance(self):
         calcObject = CalcDistances()
@@ -103,6 +108,7 @@ class MainClass:
             iterator += 1
             biggerOutputList.append(outputList) 
         self.TextTable(biggerOutputList, "Chebyshev.txt")
+        return biggerOutputList
 
     def GenerateManhatanDistance(self):
         calcObject = CalcDistances()
@@ -115,6 +121,7 @@ class MainClass:
             iterator += 1
             biggerOutputList.append(outputList) 
         self.TextTable(biggerOutputList, "Manhatan.txt")
+        return biggerOutputList
 
     def GeneratePowDistance(self, p: int, r: int):
         calcObject = CalcDistances()
@@ -127,6 +134,7 @@ class MainClass:
             iterator += 1
             biggerOutputList.append(outputList) 
         self.TextTable(biggerOutputList, "Pow{}{}.txt".format(p, r))
+        return biggerOutputList
 
     def TextTable(self, dataToShow, fileName: Text):
         x = PrettyTable()
@@ -141,14 +149,57 @@ class MainClass:
         with open(pathToSave, 'w', encoding='utf-8') as file:
             file.write(x.get_string())
 
+    def TfmTextTable(self, dataToShow, fileName: Text):
+        x = PrettyTable()
+        x.field_names = ['Data / Term'] + self.terms
+        iterator = 0
+        for i in dataToShow:
+            x.add_row([self.AllFileNames[iterator]] + i) 
+            iterator += 1
+
+        pathToSave = self.ScriptDir + '\\Raport\\' + fileName    
+
+        with open(pathToSave, 'w', encoding='utf-8') as file:
+            file.write(x.get_string())
+
+    def mds(self, similarity):
+        model = MDS(dissimilarity='precomputed')
+        # result = model.fit_transform(1 - similarity)
+        result = model.fit_transform(similarity)
+        return result.T
+
+    def ShowChart(self, data):
+        haha = np.array(data)
+        wynik = cos.mds(haha)
+        twynik = wynik.transpose(1, 0)
+        kmeans = KMeans(n_clusters=3).fit(twynik)
+
+        wynik1 = wynik[0, :]
+        wynik2 = wynik[1, :]
+
+        wynik3 = wynik[:, 0]
+        wynik4 = wynik[:, 1]
+        plt.scatter(wynik1, wynik2, c=kmeans.labels_, cmap='rainbow')
+        #plt.plot(wynik1, wynik2, 'bo')
+        plt.show()
 
 cos = MainClass()
 # os.ExtractText()
 cos.GenerateTfmCellList()
-cos.GenerateEuclidesDistance()
-cos.GenerateManhatanDistance()
-cos.GenerateCosineDistance()
-cos.GenerateChebysheveDistance()
-cos.GeneratePowDistance(1, 2)
-cos.GeneratePowDistance(3, 4)
-cos.GeneratePowDistance(5, 6)
+
+Euclides = cos.GenerateEuclidesDistance()
+Manhatan = cos.GenerateManhatanDistance()
+Cosine = cos.GenerateCosineDistance()
+Chebysheve = cos.GenerateChebysheveDistance()
+Pow12 = cos.GeneratePowDistance(1, 2)
+Pow34 = cos.GeneratePowDistance(3, 4)
+Pow56 = cos.GeneratePowDistance(5, 6)
+
+cos.ShowChart(Euclides)
+cos.ShowChart(Manhatan)
+cos.ShowChart(Cosine)
+cos.ShowChart(Chebysheve)
+cos.ShowChart(Pow12)
+cos.ShowChart(Pow34)
+cos.ShowChart(Pow56)
+
