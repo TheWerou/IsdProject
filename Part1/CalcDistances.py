@@ -21,4 +21,6 @@ class CalcDistances:
         for i in range(len(list1)):
             difrence += abs(list1[i] - list2[i])
         poweredDifrence = pow(difrence, p)
+        if poweredDifrence == 0:
+            return poweredDifrence
         return pow(poweredDifrence, -r)

@@ -116,6 +116,18 @@ class MainClass:
             biggerOutputList.append(outputList) 
         self.TextTable(biggerOutputList, "Manhatan.txt")
 
+    def GeneratePowDistance(self, p: int, r: int):
+        calcObject = CalcDistances()
+        iterator = 0
+        biggerOutputList = []
+        for i in self.ListOfTfmCellsData:
+            outputList = []
+            for k in self.ListOfTfmCellsData:
+                outputList.append(calcObject.CaclPowDistance(i, k, p, r))
+            iterator += 1
+            biggerOutputList.append(outputList) 
+        self.TextTable(biggerOutputList, "Pow{}{}.txt".format(p, r))
+
     def TextTable(self, dataToShow, fileName: Text):
         x = PrettyTable()
         x.field_names = ['Data / Data'] + self.AllFileNames
@@ -130,7 +142,6 @@ class MainClass:
             file.write(x.get_string())
 
 
-
 cos = MainClass()
 # os.ExtractText()
 cos.GenerateTfmCellList()
@@ -138,3 +149,6 @@ cos.GenerateEuclidesDistance()
 cos.GenerateManhatanDistance()
 cos.GenerateCosineDistance()
 cos.GenerateChebysheveDistance()
+cos.GeneratePowDistance(1, 2)
+cos.GeneratePowDistance(3, 4)
+cos.GeneratePowDistance(5, 6)
