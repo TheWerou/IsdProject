@@ -16,6 +16,3 @@ class ExtractText:
     def GetTextFromPage(self, pageNumber: int):
         pageObj = self.pdfReader.getPage(pageNumber)
         return pageObj.extractText()
-
-    def Close(self):
-        self.pdfFileObj.close()
