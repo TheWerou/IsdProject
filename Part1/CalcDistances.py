@@ -5,7 +5,7 @@ class CalcDistances:
         pass
 
     def CalcCosine(self, list1: list, list2: list):
-        return distance.cosine(list1, list2)
+        return 1 - distance.cosine(list1, list2)
 
     def CalcEuclides(self, list1: list, list2: list):
         return distance.euclidean(list1, list2)

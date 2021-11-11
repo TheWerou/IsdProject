@@ -19,15 +19,17 @@ class MainClass:
     def __init__(self):
         self.pdfDir = 'C:\\Users\\wojte\Desktop\\notatki\\ISD\\zaj1\\PDF\\'
         self.terms = ["candy", "bar", "lollypop", "jelly candy", "chocolate", "ice cream", "dessert", "sweets", "hard candy", "cake", "engine", "pen"]
-        self.ListOfData = self.GenerateData()
+        self.AllFileNames = []
         self.ListOfTfmCells = []
         self.ListOfTfmCellsData = []
+        self.ListOfData = self.GenerateData()
+        self.ScriptDir = os.path.abspath(os.getcwd())
         self.saveF = SaveToFile(os.path.abspath(os.getcwd()))
 
     def GenerateData(self):
-        dataFileNames = self.GetAllFileNames()
+        self.AllFileNames = self.GetAllFileNames()
         listOfData = []
-        for i in dataFileNames:
+        for i in self.AllFileNames:
             newData = DataItem(i, self.pdfDir + i)
             listOfData.append(newData)
 
@@ -76,20 +78,63 @@ class MainClass:
                 outputList.append(calcObject.CalcEuclides(i, k))
             iterator += 1
             biggerOutputList.append(outputList) 
-        self.NewTable(biggerOutputList)
+        self.TextTable(biggerOutputList, "Euclides.txt")
 
-    def NewTable(self, dataToShow):
-        fig, axs = plt.subplots()
-        allDataNames = self.GetAllFileNames()
-        datatoShowArray = np.array(dataToShow)
-        axs.axis('tight')
-        axs.axis('off')
-        axs.xaxis.zoom(3)
-        the_table = axs.table(cellText=datatoShowArray, colLabels=allDataNames, loc='center')
-        plt.show()
+    def GenerateCosineDistance(self):
+        calcObject = CalcDistances()
+        iterator = 0
+        biggerOutputList = []
+        for i in self.ListOfTfmCellsData:
+            outputList = []
+            for k in self.ListOfTfmCellsData:
+                outputList.append(calcObject.CalcCosine(i, k))
+            iterator += 1
+            biggerOutputList.append(outputList) 
+        self.TextTable(biggerOutputList, "Cosine.txt")
+
+    def GenerateChebysheveDistance(self):
+        calcObject = CalcDistances()
+        iterator = 0
+        biggerOutputList = []
+        for i in self.ListOfTfmCellsData:
+            outputList = []
+            for k in self.ListOfTfmCellsData:
+                outputList.append(calcObject.CalcChebyshev(i, k))
+            iterator += 1
+            biggerOutputList.append(outputList) 
+        self.TextTable(biggerOutputList, "Chebyshev.txt")
+
+    def GenerateManhatanDistance(self):
+        calcObject = CalcDistances()
+        iterator = 0
+        biggerOutputList = []
+        for i in self.ListOfTfmCellsData:
+            outputList = []
+            for k in self.ListOfTfmCellsData:
+                outputList.append(calcObject.CalcManhatan(i, k))
+            iterator += 1
+            biggerOutputList.append(outputList) 
+        self.TextTable(biggerOutputList, "Manhatan.txt")
+
+    def TextTable(self, dataToShow, fileName: Text):
+        x = PrettyTable()
+        x.field_names = ['Data / Data'] + self.AllFileNames
+        iterator = 0
+        for i in dataToShow:
+            x.add_row([self.AllFileNames[iterator]] + i) 
+            iterator += 1
+
+        pathToSave = self.ScriptDir + '\\Raport\\' + fileName    
+
+        with open(pathToSave, 'w', encoding='utf-8') as file:
+            file.write(x.get_string())
+
+
 
 cos = MainClass()
 # os.ExtractText()
 cos.GenerateTfmCellList()
 cos.GenerateEuclidesDistance()
-
+cos.GenerateManhatanDistance()
+cos.GenerateCosineDistance()
+cos.GenerateChebysheveDistance()
