@@ -168,21 +168,47 @@ class MainClass:
         result = model.fit_transform(similarity)
         return result.T
 
-    def ShowChart(self, data):
+    def PrepDataToShow(self, data):
         haha = np.array(data)
-        wynik = cos.mds(haha)
+        wynik = self.mds(haha)
         twynik = wynik.transpose(1, 0)
         kmeans = KMeans(n_clusters=3).fit(twynik)
 
         wynik1 = wynik[0, :]
         wynik2 = wynik[1, :]
+        return wynik1, wynik2, kmeans.labels_
 
+    def ShowChart(self, data, name):
+        haha = np.array(data)
+        wynik = self.mds(haha)
+        twynik = wynik.transpose(1, 0)
+        kmeans = KMeans(n_clusters=3).fit(twynik)
+
+        wynik1 = wynik[0, :]
+        wynik2 = wynik[1, :]
+        plt.title(name)
         plt.scatter(wynik1, wynik2, c=kmeans.labels_, cmap='rainbow')
-        #plt.plot(wynik1, wynik2, 'bo')
+        plt.show()
+
+    def ShowCharts(self, listOfList, listOfNames):
+        f, axes = plt.subplots(nrows = 3, ncols = 3, sharex=True, sharey = True)
+        iInc = 0
+        kInc = 0
+        iteration = 0
+        for data in listOfList:
+            prepData = self.PrepDataToShow(data)
+            axes[iInc][kInc].scatter(prepData[0], prepData[1], c=prepData[2], cmap='rainbow')
+            axes[iInc][kInc].set_xlabel(listOfNames[iteration], labelpad = 5)
+            kInc += 1
+            iteration += 1
+            if kInc == 3:
+                iInc += 1
+                kInc = 0
+
         plt.show()
 
 cos = MainClass()
-# os.ExtractText()
+
 cos.GenerateTfmCellList()
 
 Euclides = cos.GenerateEuclidesDistance()
@@ -193,11 +219,8 @@ Pow12 = cos.GeneratePowDistance(1, 2)
 Pow34 = cos.GeneratePowDistance(3, 4)
 Pow56 = cos.GeneratePowDistance(5, 6)
 
-cos.ShowChart(Euclides)
-cos.ShowChart(Manhatan)
-cos.ShowChart(Cosine)
-cos.ShowChart(Chebysheve)
-cos.ShowChart(Pow12)
-cos.ShowChart(Pow34)
-cos.ShowChart(Pow56)
+ListOfList = [Euclides, Manhatan, Cosine, Chebysheve, Pow12, Pow34, Pow56]
+ListONames = ["Euclides", "Manhatan", "Cosine", "Chebysheve", "Potegowy 1 2", "Potegowy 3 4", "Potegowy 5 6"]
+cos.ShowCharts(ListOfList, ListONames)
+
 

@@ -20,7 +20,9 @@ class CalcDistances:
         difrence: float = 0
         for i in range(len(list1)):
             difrence += abs(list1[i] - list2[i])
-        poweredDifrence = pow(difrence, p)
+            poweredDifrence = pow(difrence, p)
+
         if poweredDifrence == 0:
             return poweredDifrence
-        return pow(poweredDifrence, int(1/r))
+
+        return pow(poweredDifrence, 1/r) 
