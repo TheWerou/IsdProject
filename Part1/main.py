@@ -15,11 +15,14 @@ from sklearn.manifold import MDS
 from sklearn.cluster import KMeans
 
 from CalcDistances import CalcDistances
+from GenerateCharts import GenerateCharts
+from GenerateDistances import GenerateDistance
+from GenerateTables import GenerateTables
 from SaveToFile import SaveToFile
 
 class MainClass:
-    def __init__(self):
-        self.pdfDir = 'C:\\Users\\wojte\Desktop\\notatki\\ISD\\zaj1\\PDF\\'
+    def __init__(self, pdfDir):
+        self.pdfDir = pdfDir
         self.terms = ["candy", "bar", "lollypop", "jelly candy", "chocolate", "ice cream", "dessert", "sweets", "hard candy", "cake", "engine", "pen"]
         self.AllFileNames = []
         self.ListOfTfmCells = []
@@ -27,6 +30,7 @@ class MainClass:
         self.ListOfData = self.GenerateData()
         self.ScriptDir = os.path.abspath(os.getcwd())
         self.saveF = SaveToFile(os.path.abspath(os.getcwd()))
+        self.TableGenerator = GenerateTables(self.AllFileNames, self.ScriptDir, self.terms)
 
     def GenerateData(self):
         self.AllFileNames = self.GetAllFileNames()
@@ -37,6 +41,17 @@ class MainClass:
 
         return listOfData
 
+    def GenerateTfmCellList(self):
+        for i in self.ListOfData: 
+            outputList = []
+            textToAnalize = self.GetExtractedText(i.DataName)
+            for k in self.terms:
+                tfmCell = self.CountWordFormPDF(k, textToAnalize)
+                outputList.append(tfmCell)
+                self.ListOfTfmCells.append(tfmCell)
+            self.ListOfTfmCellsData.append(outputList)
+        self.TableGenerator.TfmTextTable(self.ListOfTfmCellsData, "TFM.txt")
+        
     def GetAllFileNames(self):
         return os.listdir(self.pdfDir)
 
@@ -60,167 +75,57 @@ class MainClass:
         fileNameTxt = os.path.splitext(fileName)[0] + '.txt'
         return self.saveF.ReadFile(fileNameTxt)
 
-    def GenerateTfmCellList(self):
-        for i in self.ListOfData: 
-            outputList = []
-            textToAnalize = self.GetExtractedText(i.DataName)
-            for k in self.terms:
-                tfmCell = self.CountWordFormPDF(k, textToAnalize)
-                outputList.append(tfmCell)
-                self.ListOfTfmCells.append(tfmCell)
-            self.ListOfTfmCellsData.append(outputList)
-        self.TfmTextTable(self.ListOfTfmCellsData, "TFM.txt")
-
-    def GenerateEuclidesDistance(self):
-        calcObject = CalcDistances()
-        iterator = 0
-        biggerOutputList = []
-        for i in self.ListOfTfmCellsData:
-            outputList = []
-            for k in self.ListOfTfmCellsData:
-                outputList.append(calcObject.CalcEuclides(i, k))
-            iterator += 1
-            biggerOutputList.append(outputList) 
-        self.TextTable(biggerOutputList, "Euclides.txt")
-        return biggerOutputList
-
-    def GenerateCosineDistance(self):
-        calcObject = CalcDistances()
-        iterator = 0
-        biggerOutputList = []
-        for i in self.ListOfTfmCellsData:
-            outputList = []
-            for k in self.ListOfTfmCellsData:
-                outputList.append(calcObject.CalcCosine(i, k))
-            iterator += 1
-            biggerOutputList.append(outputList) 
-        self.TextTable(biggerOutputList, "Cosine.txt")
-        return biggerOutputList
-
-    def GenerateChebysheveDistance(self):
-        calcObject = CalcDistances()
-        iterator = 0
-        biggerOutputList = []
-        for i in self.ListOfTfmCellsData:
-            outputList = []
-            for k in self.ListOfTfmCellsData:
-                outputList.append(calcObject.CalcChebyshev(i, k))
-            iterator += 1
-            biggerOutputList.append(outputList) 
-        self.TextTable(biggerOutputList, "Chebyshev.txt")
-        return biggerOutputList
-
-    def GenerateManhatanDistance(self):
-        calcObject = CalcDistances()
-        iterator = 0
-        biggerOutputList = []
-        for i in self.ListOfTfmCellsData:
-            outputList = []
-            for k in self.ListOfTfmCellsData:
-                outputList.append(calcObject.CalcManhatan(i, k))
-            iterator += 1
-            biggerOutputList.append(outputList) 
-        self.TextTable(biggerOutputList, "Manhatan.txt")
-        return biggerOutputList
-
-    def GeneratePowDistance(self, p: int, r: int):
-        calcObject = CalcDistances()
-        iterator = 0
-        biggerOutputList = []
-        for i in self.ListOfTfmCellsData:
-            outputList = []
-            for k in self.ListOfTfmCellsData:
-                outputList.append(calcObject.CaclPowDistance(i, k, p, r))
-            iterator += 1
-            biggerOutputList.append(outputList) 
-        self.TextTable(biggerOutputList, "Pow{}{}.txt".format(p, r))
-        return biggerOutputList
-
-    def TextTable(self, dataToShow, fileName: Text):
-        x = PrettyTable()
-        x.field_names = ['Data / Data'] + self.AllFileNames
-        iterator = 0
-        for i in dataToShow:
-            x.add_row([self.AllFileNames[iterator]] + i) 
-            iterator += 1
-
-        pathToSave = self.ScriptDir + '\\Raport\\' + fileName    
-
-        with open(pathToSave, 'w', encoding='utf-8') as file:
-            file.write(x.get_string())
-
-    def TfmTextTable(self, dataToShow, fileName: Text):
-        x = PrettyTable()
-        x.field_names = ['Data / Term'] + self.terms
-        iterator = 0
-        for i in dataToShow:
-            x.add_row([self.AllFileNames[iterator]] + i) 
-            iterator += 1
-
-        pathToSave = self.ScriptDir + '\\Raport\\' + fileName    
-
-        with open(pathToSave, 'w', encoding='utf-8') as file:
-            file.write(x.get_string())
-
     def mds(self, similarity):
         model = MDS(dissimilarity='precomputed')
         # result = model.fit_transform(1 - similarity)
         result = model.fit_transform(similarity)
         return result.T
 
-    def PrepDataToShow(self, data):
+    def PrepDataToShow(self, data, nr_clasters):
         haha = np.array(data)
         wynik = self.mds(haha)
         twynik = wynik.transpose(1, 0)
-        kmeans = KMeans(n_clusters=3).fit(twynik)
+        kmeans = KMeans(n_clusters=nr_clasters).fit(twynik)
 
         wynik1 = wynik[0, :]
         wynik2 = wynik[1, :]
         return wynik1, wynik2, kmeans.labels_
 
-    def ShowChart(self, data, name):
-        haha = np.array(data)
-        wynik = self.mds(haha)
-        twynik = wynik.transpose(1, 0)
-        kmeans = KMeans(n_clusters=3).fit(twynik)
+    def Main(self):
+        cos = MainClass('C:\\Users\\wojte\Desktop\\notatki\\ISD\\zaj1\\PDF\\')
 
-        wynik1 = wynik[0, :]
-        wynik2 = wynik[1, :]
-        plt.title(name)
-        plt.scatter(wynik1, wynik2, c=kmeans.labels_, cmap='rainbow')
-        plt.show()
+        cos.GenerateTfmCellList()
+        generator = GenerateDistance(cos.TableGenerator)
 
-    def ShowCharts(self, listOfList, listOfNames):
-        f, axes = plt.subplots(nrows = 3, ncols = 3, sharex=True, sharey = True)
-        iInc = 0
-        kInc = 0
-        iteration = 0
-        for data in listOfList:
-            prepData = self.PrepDataToShow(data)
-            axes[iInc][kInc].scatter(prepData[0], prepData[1], c=prepData[2], cmap='rainbow')
-            axes[iInc][kInc].set_xlabel(listOfNames[iteration], labelpad = 5)
-            kInc += 1
-            iteration += 1
-            if kInc == 3:
-                iInc += 1
-                kInc = 0
+        Euclides = generator.GenerateEuclidesDistance(cos.ListOfTfmCellsData)
+        Manhatan = generator.GenerateManhatanDistance(cos.ListOfTfmCellsData)
+        Cosine = generator.GenerateCosineDistance(cos.ListOfTfmCellsData)
+        Chebysheve = generator.GenerateChebysheveDistance(cos.ListOfTfmCellsData)
+        Pow12 = generator.GeneratePowDistance(cos.ListOfTfmCellsData, 1, 2)
+        Pow34 = generator.GeneratePowDistance(cos.ListOfTfmCellsData, 3, 4)
+        Pow56 = generator.GeneratePowDistance(cos.ListOfTfmCellsData, 5, 6)
 
-        plt.show()
+        ListOfList = [Euclides, Manhatan, Cosine, Chebysheve, Pow12, Pow34, Pow56]
+        ListONames = ["Euclides", "Manhatan", "Cosine", "Chebysheve", "Potegowy 1 2", "Potegowy 3 4", "Potegowy 5 6"]
 
-cos = MainClass()
+        chartGenerator = GenerateCharts()
+        items = []
 
-cos.GenerateTfmCellList()
+        for i in ListOfList:
+            items.append(cos.PrepDataToShow(i, 3))
 
-Euclides = cos.GenerateEuclidesDistance()
-Manhatan = cos.GenerateManhatanDistance()
-Cosine = cos.GenerateCosineDistance()
-Chebysheve = cos.GenerateChebysheveDistance()
-Pow12 = cos.GeneratePowDistance(1, 2)
-Pow34 = cos.GeneratePowDistance(3, 4)
-Pow56 = cos.GeneratePowDistance(5, 6)
+        chartGenerator.ShowCharts(ListONames, items)
+        items = []
 
-ListOfList = [Euclides, Manhatan, Cosine, Chebysheve, Pow12, Pow34, Pow56]
-ListONames = ["Euclides", "Manhatan", "Cosine", "Chebysheve", "Potegowy 1 2", "Potegowy 3 4", "Potegowy 5 6"]
-cos.ShowCharts(ListOfList, ListONames)
+        for i in ListOfList:
+            items.append(cos.PrepDataToShow(i, 5))
+
+        chartGenerator.ShowCharts(ListONames, items)
+        items = []
+
+        for i in ListOfList:
+            items.append(cos.PrepDataToShow(i, 7))
+
+        chartGenerator.ShowCharts(ListONames, items)
 
 
