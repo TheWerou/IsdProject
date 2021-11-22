@@ -27,6 +27,8 @@ class GenerateCharts:
         for preperedData in preperedDataList:
             axes[iInc][kInc].scatter(preperedData[0], preperedData[1], c=preperedData[2], cmap='rainbow')
             axes[iInc][kInc].set_xlabel(listOfNames[iteration], labelpad = 5)
+            for data in range(len(preperedData[0])):
+                axes[iInc][kInc].annotate(data, (preperedData[0][data], preperedData[1][data]))
             kInc += 1
             iteration += 1
             if kInc == 3:

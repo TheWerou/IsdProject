@@ -91,7 +91,9 @@ class MainClass:
         wynik2 = wynik[1, :]
         return wynik1, wynik2, kmeans.labels_
 
-    def Main(self):
+
+
+if __name__ == "__main__":
         cos = MainClass('C:\\Users\\wojte\Desktop\\notatki\\ISD\\zaj1\\PDF\\')
 
         cos.GenerateTfmCellList()
@@ -127,5 +129,3 @@ class MainClass:
             items.append(cos.PrepDataToShow(i, 7))
 
         chartGenerator.ShowCharts(ListONames, items)
-
-
