@@ -13,36 +13,36 @@ class Shop:
         
         test1 = [
             [0, 0, 0, 0, 4, 0, 1, 0, 0, 0, 1, 0],
-            [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 0, 0, 1, 1, 0, 0, 0, 2, 0, 0, 0],
             [0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 5, 0, 0],
             [2, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0],
             [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0],
-            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-            [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [4, 0, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0],
+            [0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
             [0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0]]
         
         test2 = [
+            [2, 0, 4, 0, 3, 0, 0, 0, 0, 0, 0, 1],
+            [2, 0, 5, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [2, 0, 6, 0, 1, 0, 0, 0, 2, 0, 0, 0],
+            [2, 0, 2, 0, 0, 0, 0, 0, 0, 4, 5, 0],
+            [2, 4, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0],
+            [2, 1, 0, 0, 4, 1, 0, 3, 0, 0, 0, 0],
+            [2, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [2, 0, 2, 0, 0, 1, 0, 0, 0, 4, 0, 0],
             [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 4, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 1, 0, 3, 0, 0, 0, 0],
-            [0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],]
+            [0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 1],]
 
-        self.shopSystem.ListOfTransactions = test1
+        self.shopSystem.ListOfTransactions = test2
 
     def Main(self):
         self.TableOfProduct()
         selectedItem = self.ChoseItemToBuy()
-        sugestion = self.shopSystem.AddAndShowRecomendatedItems([selectedItem])    
+        sugestion = self.shopSystem.AddAndShowRecomendatedItems(selectedItem)    
         self.SugestItem(sugestion)
 
     def TableOfProduct(self):
@@ -53,16 +53,23 @@ class Shop:
         print("Chose item to buy")
         print(x.get_string())
 
-    def ChoseItemToBuy(self):  
-        print("What item would you like to buy? 0 to exit")
-        print("> ", end='')
-        itemBuyed = int(input())
-        print("What amount ")
-        print("> ", end='')
+    def ChoseItemToBuy(self): 
+        listOfItems = [] 
+        while True:
+            print("What item would you like to buy? 0 to exit")
+            print("> ", end='')
+            itemBuyed = int(input())
+            if itemBuyed == 0:
+                break
+            print("What amount ")
+            print("> ", end='')
+            amountBuyed = int(input())
+            if amountBuyed == 0:
+                break
+            listOfItems.append([itemBuyed, amountBuyed])
 
-        amountBuyed = int(input())
 
-        return [itemBuyed, amountBuyed]
+        return listOfItems
 
     def ChoseItemsToBuy(self):
         exit = True

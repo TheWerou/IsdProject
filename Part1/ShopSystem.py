@@ -1,6 +1,7 @@
 import re
 from typing import List
 from GenerateDistances import GenerateDistance
+from GenerateCharts import GenerateCharts
 from main import MainClass
 
 
@@ -26,6 +27,13 @@ class ShopSystem:
         generator = GenerateDistance(cos.TableGenerator)
         values = generator.GenerateChebysheveDistance(self.ListOfTransactions, False)
         cos.TableGenerator.TextTableEnhanced(values, "Sugestion.txt", self.GenerateLineNames(len(self.ListOfTransactions)))
+
+        chartGenerator = GenerateCharts()
+        listOfNames = []
+        for i in range(12):
+            listOfNames.append(i)
+
+        chartGenerator.ShowChart(cos.PrepDataToShow(values, 5), "Cosine", listOfNames)
         return values
 
     def GenerateLineNames(self, amount):
@@ -39,6 +47,8 @@ class ShopSystem:
         newData.sort()
         listElemenst = newData[1:4]
         indexList = []
+        sortList = data[-1].copy()
+
         for i in listElemenst:
             itemToappend = data[-1].index(i)
             indexList.append(itemToappend)

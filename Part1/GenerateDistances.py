@@ -24,7 +24,7 @@ class GenerateDistance:
             self.TableGenerator.TextTable(biggerOutputList, "Euclides.txt")
         return biggerOutputList
 
-    def GenerateCosineDistance(self, ListOfTfmCellsData):
+    def GenerateCosineDistance(self, ListOfTfmCellsData, printTable = True):
         calcObject = CalcDistances()
         iterator = 0
         biggerOutputList = []
@@ -34,7 +34,8 @@ class GenerateDistance:
                 outputList.append(calcObject.CalcCosine(i, k))
             iterator += 1
             biggerOutputList.append(outputList) 
-        self.TableGenerator.TextTable(biggerOutputList, "Cosine.txt")
+        if printTable:
+            self.TableGenerator.TextTable(biggerOutputList, "Cosine.txt")
         return biggerOutputList
 
     def GenerateChebysheveDistance(self, ListOfTfmCellsData, printTable = True):
@@ -51,7 +52,7 @@ class GenerateDistance:
             self.TableGenerator.TextTable(biggerOutputList, "Chebyshev.txt")
         return biggerOutputList
 
-    def GenerateManhatanDistance(self, ListOfTfmCellsData):
+    def GenerateManhatanDistance(self, ListOfTfmCellsData,  printTable = True):
         calcObject = CalcDistances()
         iterator = 0
         biggerOutputList = []
@@ -60,8 +61,9 @@ class GenerateDistance:
             for k in ListOfTfmCellsData:
                 outputList.append(calcObject.CalcManhatan(i, k))
             iterator += 1
-            biggerOutputList.append(outputList) 
-        self.TableGenerator.TextTable(biggerOutputList, "Manhatan.txt")
+            biggerOutputList.append(outputList)
+        if printTable:  
+            self.TableGenerator.TextTable(biggerOutputList, "Manhatan.txt")
         return biggerOutputList
 
     def GeneratePowDistance(self,ListOfTfmCellsData,  p: int, r: int):

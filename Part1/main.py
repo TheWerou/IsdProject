@@ -112,20 +112,16 @@ if __name__ == "__main__":
 
         chartGenerator = GenerateCharts()
         items = []
+        iterator = 0
+        # for i in ListOfList:
+        #     chartGenerator.ShowChart(cos.PrepDataToShow(i, 3), ListONames[iterator], cos.AllFileNames)
+        #     iterator += 1
 
-        for i in ListOfList:
-            items.append(cos.PrepDataToShow(i, 3))
-
-        chartGenerator.ShowCharts(ListONames, items)
         items = []
-
+        iterator = 0
         for i in ListOfList:
-            items.append(cos.PrepDataToShow(i, 5))
+            chartGenerator.ShowChart(cos.PrepDataToShow(i, 7), ListONames[iterator], cos.AllFileNames)
+            iterator += 1
 
-        chartGenerator.ShowCharts(ListONames, items)
-        items = []
 
-        for i in ListOfList:
-            items.append(cos.PrepDataToShow(i, 7))
 
-        chartGenerator.ShowCharts(ListONames, items)
